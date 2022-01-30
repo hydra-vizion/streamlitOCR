@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 import pytesseract
 
 # pytesseract.pytesseract.tesseract_cmd = r'B:\Tesseract4\tesseract.exe'
-pytesseract.pytesseract.tesseract_cmd = r'Tesseract4\tesseract.exe'
+pytesseract.pytesseract.tesseract_cmd = 'Tesseract4\tesseract.exe'
 st.header("Upload receipt picture")
 st.write("Upload receipt picture")
 
@@ -54,7 +54,7 @@ if ocr:
         image = Image.open(uploaded_file)
         image = np.array(image)
         image = rusn(image)
-        extracted_text6 = pytesseract.image_to_string(image,lang="fined",config=options)
+        extracted_text6 = pytesseract.image_to_string(image,config=options)
         st.write(extracted_text6)
         placeholder.empty()
     else:
