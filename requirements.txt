@@ -2,4 +2,4 @@ opencv-python-headless
 Pillow
 numpy
 matplotlib
-pytesseract
+pytesseract==4.0.0

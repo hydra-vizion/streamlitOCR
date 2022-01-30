@@ -7,7 +7,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import pytesseract
 
-pytesseract.pytesseract.tesseract_cmd = r'B:\Tesseract4\tesseract.exe'
+//pytesseract.pytesseract.tesseract_cmd = r'B:\Tesseract4\tesseract.exe'
 
 st.header("Upload receipt picture")
 st.write("Upload receipt picture")
