@@ -1,0 +1,2 @@
+convert input.tiff -fill white -draw 'rectangle 10,10 20,20' -background white -flatten +matte output.tiff
+
