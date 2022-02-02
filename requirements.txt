@@ -3,3 +3,8 @@ Pillow
 numpy
 matplotlib
 pytesseract
+dateutil
+pandas
+re
+nltk
+jellyfish
