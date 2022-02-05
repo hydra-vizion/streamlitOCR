@@ -3,7 +3,7 @@ Pillow
 numpy
 matplotlib
 pytesseract
-dateutil
+python-dateutil
 pandas
 re
 nltk
