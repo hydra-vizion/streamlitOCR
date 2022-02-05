@@ -12,7 +12,7 @@ from jellyfish import jaro_distance as jd
 import nltk
 import re
 import pandas as pd
-
+nltk.download('punkt')
 
 # pytesseract.pytesseract.tesseract_cmd = r'B:\Tesseract4\tesseract.exe'
 
