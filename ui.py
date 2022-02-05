@@ -1,4 +1,5 @@
 from distutils.command.config import config
+from nltk.util import pr
 import streamlit as st
 import pandas as pd
 import cv2
@@ -16,7 +17,7 @@ import pandas as pd
 # pytesseract.pytesseract.tesseract_cmd = r'B:\Tesseract4\tesseract.exe'
 
 st.set_page_config(layout="wide",page_title="Receipt OCR to CSV for Expenditure analysis")
-col1,col2,col3= st.columns((1,3,2))
+col1,col2,col4,col3= st.columns((1,3,1,1))
 matcher = pd.DataFrame(columns={"ds","y"})
 if 'count' not in st.session_state:
     st.session_state.count = pd.DataFrame(columns={"ds","y"})
@@ -38,10 +39,13 @@ def start():
             image = np.array(image)
             col2.image(image,width=250)
         except:
-            col2.write("File can't be read, it is either unsupported or corrupted file type. Please upload new file (PNG, JPG, JPEG)")
+            if st.session_state.canSave:
+                col2.write("Press Save again to confirm")
+            else:
+                col2.write("File can't be read, it is either unsupported or corrupted file type. Please upload new file (PNG, JPG, JPEG)")
     
     ocr = col2.button(label="OCR Image")
-    placeholder = st.empty()
+    placeholder = col2.empty()
     if ocr:
         if uploaded_file:
             
@@ -66,31 +70,44 @@ def start():
         saveDatas = col2.button(label="Save")
         
     if saveDatas and st.session_state.canSave:
-
-        st.session_state.count = addtoDataFrame(st.session_state.count,dateinput,spendsinput)
-        st.session_state.canSave = False
-        col2.write("Data saved into CSV, please press save again")
-        # print(st.session_state.count)
+        if not checkDateFormat(dateinput):
+            col2.write("Check the date format, only input numbers Eg. dd/mm/yyyy, 10/1/2022, 10,1,22")
+        elif not checkSpendType(spendsinput):
+            col2.write("Only input numbers or decimals")
+        else:
+            st.session_state.count = addtoDataFrame(st.session_state.count,dateinput,spendsinput)
+            st.session_state.canSave = False
+            col2.write("Data saved into CSV (last row), Press save again to sort")
+        
 
     if not st.session_state.count.empty:
-        st.dataframe(st.session_state.count)
+        col3.write("Saved data in CSV format")
+        col3.dataframe(st.session_state.count)
         dFram = st.session_state.count
+        dFram["ds"] = pd.to_datetime(dFram["ds"],dayfirst=True)
+        dFram["ds"] = dFram["ds"].dt.strftime("%Y/%m/%d")
+        dFram = dFram.sort_values(by=['ds'])
+        dFram.reset_index(inplace=True,drop=True)
+        dFram["ds"] = pd.to_datetime(dFram["ds"],yearfirst=True,dayfirst=False)
+        dFram["ds"] = dFram["ds"].dt.strftime("%d/%m/%Y")
+        st.session_state.count = dFram
         dFram = dFram.to_csv(index=False).encode('utf-8')
-        fomr2 = st.download_button("Download CSV",dFram,"data.csv","text/csv",key='download-csv')
+        dload = col3.download_button("Download CSV",dFram,"data.csv","text/csv",key='download-csv')
 
+# def changeDatetoNormal(date):
 
 def checkDateFormat(date):
-    dateSplit = datesArr[i].split('/')
-    for i in range(len(datesArr)):
+    dateSplit = date.split('/')
+    for i in range(len(dateSplit)):
         if not dateSplit[i].isdigit():
             return False
     return True   
     
 def checkSpendType(spend):
-    
-    if spend.isdigit:
+    try:
+        float(spend)
         return True
-    else:
+    except:
         return False
 
 # grayscaled image
@@ -250,7 +267,7 @@ def find_All(image):
     datesFound = [find_date(graytxt), find_date(p1txt), find_date(p2txt), find_date(bintxt), find_date(blurtxt)]
     datesFound = [a for a in datesFound if a != -1]
     if datesFound == []:
-        finalDate = "dd/mm/yy"
+        finalDate = "dd/mm/yy (Date not Found)"
     else:    
         finalDate = normalize_date(datesFound)
 
