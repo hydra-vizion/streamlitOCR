@@ -5,6 +5,5 @@ matplotlib
 pytesseract
 python-dateutil
 pandas
-re
 nltk
 jellyfish
